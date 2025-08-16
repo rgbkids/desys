@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 type Msg = { role: 'user' | 'assistant'; content: string }
@@ -21,6 +22,7 @@ function applyTokensToDocument(tokens: DesignTokens) {
 }
 
 export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens }) {
+  const router = useRouter()
   const [tokens, setTokens] = useState<DesignTokens>(initialTokens)
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('落ち着いた高コントラストのダークテーマに')
@@ -47,6 +49,8 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
       const data = (await res.json()) as { reply: string; tokens: DesignTokens }
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
       setTokens(data.tokens)
+      // Refresh server components (layout) so SSR CSS vars reflect new tokens
+      router.refresh()
     } catch (e: any) {
       toast.error('更新に失敗しました')
     } finally {
@@ -63,6 +67,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
         body: JSON.stringify({ tokens: defaultTokens })
       })
       toast.success('デフォルトに戻しました')
+      router.refresh()
     } catch {}
   }
 

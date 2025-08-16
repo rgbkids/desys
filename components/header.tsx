@@ -58,6 +58,7 @@ export function Header() {
       <div className="flex items-center justify-end space-x-2">
         <Link href="/design" className={cn(buttonVariants({ variant: 'secondary' }))}>Design</Link>
         <Link href="/design/code" className={cn(buttonVariants({ variant: 'outline' }))}>Code</Link>
+        <Link href="/design/catalog" className={cn(buttonVariants({ variant: 'outline' }))}>Catalog</Link>
         <a
           target="_blank"
           href="https://github.com/rgbkids/keep4o/"

@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { defaultTokens, tokenKeys, type DesignTokens } from '@/lib/design-tokens'
+import { defaultComponentClasses, type ComponentClasses, type ComponentKey } from '@/lib/design-components'
 import { geminiComplete, DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
 import { anthropicComplete, DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
 
@@ -11,11 +12,13 @@ export const runtime = 'edge'
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const keyFor = (userId: string) => `design:tokens:${userId}`
 
-const SYSTEM_PROMPT = `あなたはUIデザインのアシスタントです。Tailwind + CSSカスタムプロパティに基づいたデザイントークン(以下一覧)だけを更新することで、デザインの雰囲気(色/コントラスト/曲率)を調整します。
+const SYSTEM_PROMPT = `あなたはUIデザインのアシスタントです。Tailwind + CSSカスタムプロパティのデザイントークンを調整し、あわせてUIコンポーネントのclass名(スタイル)も上書きして、雰囲気(色/コントラスト/曲率/可読性/密度)を調整します。
 必ずJSONのみで応答し、説明文は含めません。構造は次のとおり:
-{"reply": string, "tokens": Partial<DesignTokens>}
+{"reply": string, "tokens"?: Partial<DesignTokens>, "components"?: Record<string,string>}
 - reply: ユーザーへの簡潔な説明(日本語)
 - tokens: 変更したいキーと値(hsl三つ組の文字列、またはradiusはrem)。未変更のキーは含めない。
+- components: 次のキーに対して、Tailwind className文字列を上書き指定(未変更キーは含めない)。
+  キー一覧: button_primary, button_secondary, button_outline, button_ghost, button_pill, input, textarea, select, checkbox, radio, switch_track, switch_thumb, slider_track, badge_neutral, badge_secondary, badge_destructive, tabs_root, tabs_trigger_active, tabs_trigger_inactive
 
 更新可能なキー: ${tokenKeys.join(', ')}
 値の形式:
@@ -113,12 +116,13 @@ export async function POST(req: NextRequest) {
     })
     text = completion.choices[0]?.message?.content || '{}'
   }
-  let parsed: { reply?: string; tokens?: Partial<DesignTokens> } = {}
+  let parsed: { reply?: string; tokens?: Partial<DesignTokens>; components?: ComponentClasses } = {}
   try {
     parsed = JSON.parse(text)
   } catch {}
 
   const updates = (parsed.tokens ?? {}) as Partial<DesignTokens>
+  const compUpdates = (parsed.components ?? {}) as ComponentClasses
 
   // Validate keys and simple value formats
   const allowedKeys = new Set(tokenKeys)
@@ -129,8 +133,21 @@ export async function POST(req: NextRequest) {
     cleaned[k as keyof DesignTokens] = v as any
   }
 
+  // Validate component keys
+  const compAllowed = new Set(Object.keys(defaultComponentClasses))
+  const compCleaned: ComponentClasses = {}
+  for (const [k, v] of Object.entries(compUpdates)) {
+    if (!compAllowed.has(k)) continue
+    if (typeof v !== 'string') continue
+    compCleaned[k as ComponentKey] = v
+  }
+
   const merged = { ...current, ...cleaned }
   await kv.set(keyFor(session.user.id), merged)
+  if (Object.keys(compCleaned).length > 0) {
+    const saved = (await kv.get<Record<string, string>>(`design:components:${session.user.id}`)) || {}
+    await kv.set(`design:components:${session.user.id}`, { ...saved, ...compCleaned })
+  }
 
-  return NextResponse.json({ reply: parsed.reply ?? '更新しました', tokens: merged })
+  return NextResponse.json({ reply: parsed.reply ?? '更新しました', tokens: merged, components: compCleaned })
 }
