@@ -12,6 +12,7 @@ import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { HeaderNav } from './header-nav'
 
 async function UserOrLogin() {
   const session = await auth()
@@ -56,11 +57,10 @@ export function Header() {
         </React.Suspense>
       </div>
       <div className="flex items-center justify-end space-x-2">
-        <Link href="/design" className={cn(buttonVariants({ variant: 'secondary' }))}>Design</Link>
-        <Link href="/design/code" className={cn(buttonVariants({ variant: 'outline' }))}>Code</Link>
+        <HeaderNav />
         <a
           target="_blank"
-          href="https://github.com/rgbkids/keep4o/"
+          href="https://github.com/rgbkids/desys/"
           rel="noopener noreferrer"
           className={cn(buttonVariants({ variant: 'outline' }))}
         >

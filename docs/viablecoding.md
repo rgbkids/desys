@@ -1,13 +1,13 @@
-# keep4o Viable Coding Guide for Developers
+# App Viable Coding Guide for Developers
 
 <context_gathering>
-keep4o is an open-source AI chatbot app template built with Next.js, Vercel AI SDK, OpenAI, and Vercel KV.
+App is an open-source AI chatbot app template built with Next.js, Vercel AI SDK, OpenAI, and Vercel KV.
 This comprehensive guide is designed for beginners to understand the project structure and efficiently develop new features (viable coding).
 </context_gathering>
 
-## 📋 What is keep4o?
+## 📋 What is App?
 
-keep4o is a **production-ready AI chat application** that provides:
+App is a **production-ready AI chat application** that provides:
 
 - **Real-time AI Conversations**: Chat with OpenAI's GPT-4o model
 - **User Authentication**: Secure Google OAuth login system  
@@ -374,6 +374,6 @@ const res = await openai.chat.completions.create({
 
 ---
 
-**🎉 Congratulations! You now understand the keep4o architecture and are ready to start building amazing AI features!**
+**🎉 Congratulations! You now understand the App architecture and are ready to start building amazing AI features!**
 
 > **💡 Pro Tip:** Start with small changes in the `components/` directory to get familiar with the codebase, then move on to more complex features in `app/api/` as you gain confidence.

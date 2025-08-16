@@ -14,8 +14,8 @@ import { defaultTokens, type DesignTokens } from '@/lib/design-tokens'
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
-    default: '#keep4o',
-    template: `%s - #keep4o`
+    default: '#desys',
+    template: `%s - #desys`
   },
   description: 'Your GPT4o-powered conversation companion.',
   icons: {

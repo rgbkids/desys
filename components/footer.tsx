@@ -13,7 +13,7 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
       {...props}
     >
       Open source {' '}
-      <ExternalLink href="https://github.com/rgbkids/keep4o/">#keep4o</ExternalLink>
+      <ExternalLink href="https://github.com/rgbkids/desys/">#GitHub</ExternalLink>
       .
     </p>
   )

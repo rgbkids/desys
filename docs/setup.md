@@ -1,8 +1,8 @@
-# keep4o Setup Guide
+# App Setup Guide
 
 <context_gathering>
-keep4o is an open-source AI chatbot app template built with Next.js, Vercel AI SDK, OpenAI, and Vercel KV.
-This guide walks through the complete setup process to get keep4o running locally.
+App is an open-source AI chatbot app template built with Next.js, Vercel AI SDK, OpenAI, and Vercel KV.
+This guide walks through the complete setup process to get App running locally.
 </context_gathering>
 
 ## Prerequisites
@@ -34,7 +34,7 @@ git --version
 
 ```bash
 # Navigate to project directory
-cd /path/to/keep4o
+cd /path/to/{App}
 
 # Install dependencies
 pnpm install
@@ -227,7 +227,7 @@ pnpm run start
 - [ ] Chat functionality works and AI responds
 - [ ] Conversation history is saved in KV database
 
-**Once setup is complete, you can start chatting with AI using keep4o!**
+**Once setup is complete, you can start chatting with AI using App!**
 
 ## Post-Setup Troubleshooting
 

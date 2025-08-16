@@ -16,7 +16,7 @@ export default async function SignInPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">
-              #keep4o
+              #desys
             </h1>
 
             <p className="text-slate-600 dark:text-slate-400 text-lg">

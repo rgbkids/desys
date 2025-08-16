@@ -1,5 +1,5 @@
 <a href="https://chat.vercel.ai/">
-  <h1 align="center">#keep4o</h1>
+  <h1 align="center">#desys</h1>
 </a>
 
 <p align="center">
@@ -68,6 +68,10 @@ Notes:
 - You can reset to defaults anytime from the design studio.
 - In preview deployments, you may set an OpenAI key in the dialog to try without server secrets.
 
+### Using Gemini
+- Set `GEMINI_API_KEY` in `.env.local` (preferred) or `.env`.
+- In the Design and Code studios, switch the provider to "Gemini" and (optionally) provide a preview key.
+
 ## Code studio
 
 Generate React components directly from prompts and copy/download the code.
@@ -75,6 +79,7 @@ Generate React components directly from prompts and copy/download the code.
 - Path: `/design/code` (requires login)
 - Editor: Monaco (`monaco-editor`)
 - API: `POST /api/design/code` returns TSX code only; the component uses current design tokens and Tailwind.
+ - Providers: OpenAI (default) or Gemini via `GEMINI_API_KEY`.
 
 Suggested workflow:
 - Describe the component (“Hero section with headline, subtext, two buttons”).

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 type Msg = { role: 'user' | 'assistant'; content: string }
@@ -20,10 +22,12 @@ function applyTokensToDocument(tokens: DesignTokens) {
 }
 
 export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens }) {
+  const router = useRouter()
   const [tokens, setTokens] = useState<DesignTokens>(initialTokens)
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('落ち着いた高コントラストのダークテーマに')
   const [sending, setSending] = useState(false)
+  const [provider, setProvider] = useState<'openai' | 'gemini' | 'claude'>('openai')
 
   useEffect(() => {
     applyTokensToDocument(tokens)
@@ -39,12 +43,14 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
       const res = await fetch('/api/design/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, next] })
+        body: JSON.stringify({ messages: [...messages, next], provider })
       })
       if (!res.ok) throw new Error(await res.text())
       const data = (await res.json()) as { reply: string; tokens: DesignTokens }
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
       setTokens(data.tokens)
+      // Refresh server components (layout) so SSR CSS vars reflect new tokens
+      router.refresh()
     } catch (e: any) {
       toast.error('更新に失敗しました')
     } finally {
@@ -61,6 +67,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
         body: JSON.stringify({ tokens: defaultTokens })
       })
       toast.success('デフォルトに戻しました')
+      router.refresh()
     } catch {}
   }
 
@@ -68,13 +75,22 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 h-[calc(100vh-6rem)]">
       <div className="flex flex-col border rounded-lg overflow-hidden">
         <div className="p-3 border-b flex items-center gap-2">
+          <Select value={provider} onValueChange={v => setProvider(v as any)}>
+            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="openai">OpenAI</SelectItem>
+              <SelectItem value="gemini">Gemini</SelectItem>
+              <SelectItem value="claude">Claude</SelectItem>
+            </SelectContent>
+          </Select>
+          
           <Input
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="例: もっとポップでカラフルに、角丸を大きく"
           />
-          <Button onClick={handleSend} disabled={sending || !input.trim()}>送信</Button>
-          <Button variant="secondary" onClick={reset}>リセット</Button>
+          <Button onClick={handleSend} disabled={sending || !input.trim()}>Send</Button>
+          <Button variant="secondary" onClick={reset}>Reset</Button>
         </div>
         <div className="flex-1 overflow-auto p-3 space-y-3">
           {messages.length === 0 ? (
