@@ -25,7 +25,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('落ち着いた高コントラストのダークテーマに')
   const [sending, setSending] = useState(false)
-  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai')
+  const [provider, setProvider] = useState<'openai' | 'gemini' | 'claude'>('openai')
 
   useEffect(() => {
     applyTokensToDocument(tokens)
@@ -75,6 +75,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
             <SelectContent>
               <SelectItem value="openai">OpenAI</SelectItem>
               <SelectItem value="gemini">Gemini</SelectItem>
+              <SelectItem value="claude">Claude</SelectItem>
             </SelectContent>
           </Select>
           

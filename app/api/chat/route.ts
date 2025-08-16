@@ -66,6 +66,36 @@ export async function POST(req: Request) {
     }
   }
 
+  if (provider === 'claude') {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) return new Response('Missing ANTHROPIC_API_KEY', { status: 400 })
+    const { anthropicComplete, DEFAULT_CLAUDE_MODEL } = await import('@/lib/anthropic')
+    try {
+      const text = await anthropicComplete({ apiKey, model: DEFAULT_CLAUDE_MODEL, messages })
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(text))
+          controller.close()
+        }
+      })
+      const title = json.messages[0].content.substring(0, 100)
+      const id = json.id ?? nanoid()
+      const createdAt = Date.now()
+      const path = `/chat/${id}`
+      const payload = { id, title, userId, createdAt, path, messages: [...messages, { content: text, role: 'assistant' }] }
+      await kv.hmset(`chat:${id}`, payload)
+      await kv.zadd(`user:chat:${userId}`, { score: createdAt, member: `chat:${id}` })
+      return new StreamingTextResponse(stream)
+    } catch (e: any) {
+      const msg = String(e?.message || '')
+      if (!(msg.includes('429') || msg.includes('rate') || msg.includes('quota'))) {
+        return new Response(msg || 'Claude failed', { status: 500 })
+      }
+      // Fallback to OpenAI below
+    }
+  }
+
   const res = await openai.chat.completions.create({
     model: 'gpt-4o',
     messages,

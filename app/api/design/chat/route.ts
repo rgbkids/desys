@@ -4,6 +4,7 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { defaultTokens, tokenKeys, type DesignTokens } from '@/lib/design-tokens'
 import { geminiComplete, DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
+import { anthropicComplete, DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
 
 export const runtime = 'edge'
 
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const json = await req.json().catch(() => null)
   if (!json) return NextResponse.json({ error: 'Bad Request' }, { status: 400 })
-  const { messages, previewToken, provider } = json as { messages: { role: 'user' | 'assistant' | 'system'; content: string }[]; provider?: 'openai' | 'gemini'; previewToken?: string | null }
+  const { messages, previewToken, provider } = json as { messages: { role: 'user' | 'assistant' | 'system'; content: string }[]; provider?: 'openai' | 'gemini' | 'claude'; previewToken?: string | null }
 
   if (previewToken) {
     openai.apiKey = previewToken
@@ -71,6 +72,33 @@ export async function POST(req: NextRequest) {
       } else {
         return NextResponse.json({ error: msg || 'Gemini failed' }, { status: 500 })
       }
+    }
+  } else if (provider === 'claude') {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) return NextResponse.json({ error: 'Missing ANTHROPIC_API_KEY' }, { status: 400 })
+    try {
+      text = await anthropicComplete({
+        apiKey,
+        model: DEFAULT_CLAUDE_MODEL,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
+          ...messages
+        ],
+        json: true
+      })
+    } catch (e: any) {
+      const msg = String(e?.message || '')
+      // Fallback to OpenAI JSON
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini', temperature: 0.4, response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
+          ...messages
+        ]
+      })
+      text = completion.choices[0]?.message?.content || '{}'
     }
   } else {
     const completion = await openai.chat.completions.create({

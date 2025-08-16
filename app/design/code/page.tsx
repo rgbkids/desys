@@ -32,7 +32,7 @@ export default function CodeStudioPage() {
   const { copyToClipboard } = useCopyToClipboard({})
   const [loading, setLoading] = useState(false)
   const [compatible, setCompatible] = useState(true)
-  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai')
+  const [provider, setProvider] = useState<'openai' | 'gemini' | 'claude'>('openai')
 
   const generate = async () => {
     setLoading(true)
@@ -107,6 +107,7 @@ export default function CodeStudioPage() {
               <SelectContent>
                 <SelectItem value="openai">OpenAI</SelectItem>
                 <SelectItem value="gemini">Gemini</SelectItem>
+                <SelectItem value="claude">Claude</SelectItem>
               </SelectContent>
             </Select>
           </div>
