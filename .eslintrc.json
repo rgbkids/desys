@@ -17,6 +17,9 @@
       "config": "tailwind.config.js"
     }
   },
+  "ignorePatterns": [
+    "components/generated/**"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],

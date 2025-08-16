@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { defaultTokens, tokenKeys, type DesignTokens } from '@/lib/design-tokens'
+import { geminiComplete, DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
 
 export const runtime = 'edge'
 
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   const json = await req.json().catch(() => null)
   if (!json) return NextResponse.json({ error: 'Bad Request' }, { status: 400 })
-  const { messages, previewToken } = json as { messages: { role: 'user' | 'assistant' | 'system'; content: string }[]; previewToken?: string | null }
+  const { messages, previewToken, provider } = json as { messages: { role: 'user' | 'assistant' | 'system'; content: string }[]; provider?: 'openai' | 'gemini'; previewToken?: string | null }
 
   if (previewToken) {
     openai.apiKey = previewToken
@@ -39,18 +40,51 @@ export async function POST(req: NextRequest) {
   // Seed with current tokens for better grounding
   const current = (await kv.get<DesignTokens>(keyFor(session.user.id))) || defaultTokens
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0.4,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
-      ...messages
-    ]
-  })
-
-  const text = completion.choices[0]?.message?.content || '{}'
+  let text = '{}'
+  if (provider === 'gemini') {
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) return NextResponse.json({ error: 'Missing GEMINI_API_KEY' }, { status: 400 })
+    try {
+      text = await geminiComplete({
+        apiKey,
+        model: DEFAULT_GEMINI_MODEL,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
+          ...messages
+        ],
+        responseMimeType: 'application/json'
+      })
+    } catch (e: any) {
+      const msg = String(e?.message || '')
+      if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
+        // Fallback to OpenAI for chat JSON
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini', temperature: 0.4, response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
+            ...messages
+          ]
+        })
+        text = completion.choices[0]?.message?.content || '{}'
+      } else {
+        return NextResponse.json({ error: msg || 'Gemini failed' }, { status: 500 })
+      }
+    }
+  } else {
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      temperature: 0.4,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
+        ...messages
+      ]
+    })
+    text = completion.choices[0]?.message?.content || '{}'
+  }
   let parsed: { reply?: string; tokens?: Partial<DesignTokens> } = {}
   try {
     parsed = JSON.parse(text)
@@ -72,4 +106,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ reply: parsed.reply ?? '更新しました', tokens: merged })
 }
-

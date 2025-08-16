@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'react-hot-toast'
 
 type Msg = { role: 'user' | 'assistant'; content: string }
@@ -24,6 +25,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('落ち着いた高コントラストのダークテーマに')
   const [sending, setSending] = useState(false)
+  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai')
 
   useEffect(() => {
     applyTokensToDocument(tokens)
@@ -39,7 +41,7 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
       const res = await fetch('/api/design/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, next] })
+        body: JSON.stringify({ messages: [...messages, next], provider })
       })
       if (!res.ok) throw new Error(await res.text())
       const data = (await res.json()) as { reply: string; tokens: DesignTokens }
@@ -68,6 +70,14 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 h-[calc(100vh-6rem)]">
       <div className="flex flex-col border rounded-lg overflow-hidden">
         <div className="p-3 border-b flex items-center gap-2">
+          <Select value={provider} onValueChange={v => setProvider(v as any)}>
+            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="openai">OpenAI</SelectItem>
+              <SelectItem value="gemini">Gemini</SelectItem>
+            </SelectContent>
+          </Select>
+          
           <Input
             value={input}
             onChange={e => setInput(e.target.value)}

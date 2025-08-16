@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { toast } from 'react-hot-toast'
 
@@ -31,6 +32,7 @@ export default function CodeStudioPage() {
   const { copyToClipboard } = useCopyToClipboard({})
   const [loading, setLoading] = useState(false)
   const [compatible, setCompatible] = useState(true)
+  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai')
 
   const generate = async () => {
     setLoading(true)
@@ -41,7 +43,7 @@ export default function CodeStudioPage() {
       const res = await fetch('/api/design/code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: finalPrompt, name })
+        body: JSON.stringify({ prompt: finalPrompt, name, provider })
       })
       if (!res.ok) throw new Error(await res.text())
       const data = (await res.json()) as { code: string }
@@ -99,6 +101,15 @@ export default function CodeStudioPage() {
       </div>
       <div className="grid gap-3 md:grid-cols-3">
         <div className="md:col-span-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <Select value={provider} onValueChange={v => setProvider(v as any)}>
+              <SelectTrigger className="w-[140px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="openai">OpenAI</SelectItem>
+                <SelectItem value="gemini">Gemini</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <label className="text-sm font-medium">コンポーネント名</label>
           <Input value={name} onChange={e => setName(e.target.value)} placeholder="GeneratedComponent" />
           <label className="text-sm font-medium">要件（日本語でOK）</label>
