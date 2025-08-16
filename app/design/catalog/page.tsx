@@ -8,6 +8,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'react-hot-toast'
 import { CatalogCodeDialog } from '@/components/catalog-code-dialog'
+import { Buttons } from './components/Buttons'
+import { Inputs } from './components/Inputs'
+import { Checks } from './components/Checks'
+import { SwitchSlider } from './components/SwitchSlider'
+import { Badges } from './components/Badges'
+import { Tabs } from './components/Tabs'
 
 type Provider = 'openai' | 'gemini' | 'claude'
 
@@ -103,12 +109,12 @@ export default function CatalogPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card title="Buttons" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Buttons'); setCodeOpen(true) }}>コードを見る</Button>}><ButtonsDemo cx={cx} /></Card>
-        <Card title="Inputs" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Inputs'); setCodeOpen(true) }}>コードを見る</Button>}><InputsDemo cx={cx} /></Card>
-        <Card title="Select / Checkbox / Radio" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Select / Checkbox / Radio'); setCodeOpen(true) }}>コードを見る</Button>}><ChecksDemo cx={cx} /></Card>
-        <Card title="Switch / Slider" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Switch / Slider'); setCodeOpen(true) }}>コードを見る</Button>}><SwitchSliderDemo cx={cx} /></Card>
-        <Card title="Badges" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Badges'); setCodeOpen(true) }}>コードを見る</Button>}><BadgesDemo cx={cx} /></Card>
-        <Card title="Tabs" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Tabs'); setCodeOpen(true) }}>コードを見る</Button>}><TabsDemo cx={cx} /></Card>
+        <Card title="Buttons" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Buttons'); setCodeOpen(true) }}>コードを見る</Button>}><Buttons classes={classes} /></Card>
+        <Card title="Inputs" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Inputs'); setCodeOpen(true) }}>コードを見る</Button>}><Inputs classes={classes} /></Card>
+        <Card title="Select / Checkbox / Radio" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Select / Checkbox / Radio'); setCodeOpen(true) }}>コードを見る</Button>}><Checks classes={classes} /></Card>
+        <Card title="Switch / Slider" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Switch / Slider'); setCodeOpen(true) }}>コードを見る</Button>}><SwitchSlider classes={classes} /></Card>
+        <Card title="Badges" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Badges'); setCodeOpen(true) }}>コードを見る</Button>}><Badges classes={classes} /></Card>
+        <Card title="Tabs" actions={<Button size="sm" variant="outline" onClick={() => { setCodeSection('Tabs'); setCodeOpen(true) }}>コードを見る</Button>}><Tabs classes={classes} /></Card>
       </div>
 
       <CatalogCodeDialog section={codeSection} basePrompt={prompt} provider={provider} open={codeOpen} onOpenChange={setCodeOpen} />
@@ -124,108 +130,6 @@ function Card({ title, children, actions }: { title: string; children: React.Rea
         <div className="flex items-center gap-2">{actions}</div>
       </div>
       <div className="p-4">{children}</div>
-    </div>
-  )
-}
-
-function ButtonsDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      <button className={cx('button_primary','px-4 py-2 rounded-md bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow')}>Primary</button>
-      <button className={cx('button_secondary','px-4 py-2 rounded-md bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]')}>Secondary</button>
-      <button className={cx('button_outline','px-4 py-2 rounded-md border')}>Outline</button>
-      <button className={cx('button_ghost','px-4 py-2 rounded-md hover:bg-[hsl(var(--muted))]')}>Ghost</button>
-      <button className={cx('button_pill','px-4 py-2 rounded-full border')}>Pill</button>
-    </div>
-  )
-}
-
-function InputsDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  return (
-    <div className="space-y-3">
-      <input className={cx('input','w-full h-10 rounded-md border bg-[hsl(var(--background))] px-3')} placeholder="Text input" />
-      <textarea className={cx('textarea','w-full rounded-md border bg-[hsl(var(--background))] px-3 py-2')} rows={3} placeholder="Textarea" />
-    </div>
-  )
-}
-
-function ChecksDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  return (
-    <div className="flex flex-wrap items-center gap-4">
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" className={cx('checkbox','size-4 rounded border')} /> Checkbox
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input type="radio" name="r" className={cx('radio','size-4 border rounded-full')} /> Radio
-      </label>
-      <select className={cx('select','h-9 rounded-md border bg-[hsl(var(--background))] px-3 text-sm')}>
-        <option>Apple</option>
-        <option>Orange</option>
-        <option>Banana</option>
-      </select>
-    </div>
-  )
-}
-
-function SwitchSliderDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  return (
-    <div className="space-y-4">
-      {/* iOS-like switch using checkbox + peer */}
-      <label className="flex items-center gap-3 text-sm select-none">
-        <span>Switch</span>
-        <input type="checkbox" className="peer sr-only" />
-        <span className={cx('switch_track','inline-block w-12 h-7 rounded-full bg-[hsl(var(--muted))] relative transition-colors peer-checked:bg-[hsl(var(--primary))]')}>
-          <span className={cx('switch_thumb','absolute left-1 top-1 size-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5')} />
-        </span>
-      </label>
-
-      {/* Slider (range) */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground w-14">Slider</span>
-        <input
-          type="range"
-          className={cx('slider_track','w-full appearance-none h-2 rounded-full bg-[hsl(var(--muted))]')}
-          style={{
-            backgroundImage: 'linear-gradient(hsl(var(--primary)), hsl(var(--primary)))',
-            backgroundSize: '50% 100%',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
-      </div>
-    </div>
-  )
-}
-
-function BadgesDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      <span className={cx('badge_neutral','px-2 py-1 rounded-full text-xs bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]')}>Neutral</span>
-      <span className={cx('badge_secondary','px-2 py-1 rounded-full text-xs bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]')}>Secondary</span>
-      <span className={cx('badge_destructive','px-2 py-1 rounded-full text-xs bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]')}>Destructive</span>
-    </div>
-  )
-}
-
-function TabsDemo({ cx }: { cx: (key: string, fallback: string) => string }) {
-  const [tab, setTab] = useState<'one' | 'two' | 'three'>('one')
-  return (
-    <div>
-      <div className={cx('tabs_root','inline-flex rounded-md border p-1 bg-[hsl(var(--muted))] gap-1')}>
-        {[
-          { id: 'one', label: 'Tab 1' },
-          { id: 'two', label: 'Tab 2' },
-          { id: 'three', label: 'Tab 3' }
-        ].map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id as any)}
-            className={tab === t.id ? cx('tabs_trigger_active','px-3 py-1.5 text-sm rounded bg-[hsl(var(--background))] shadow') : cx('tabs_trigger_inactive','px-3 py-1.5 text-sm rounded opacity-70 hover:opacity-100')}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <div className="mt-3 text-sm text-muted-foreground">{`Content of ${tab}`}</div>
     </div>
   )
 }
