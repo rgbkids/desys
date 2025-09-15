@@ -6,6 +6,7 @@ import { defaultTokens, tokenKeys, type DesignTokens } from '@/lib/design-tokens
 import { defaultComponentClasses, type ComponentClasses, type ComponentKey } from '@/lib/design-components'
 import { geminiComplete, DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
 import { anthropicComplete, DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
+import { DEFAULT_OPENAI_MINI_MODEL } from '@/lib/openai'
 
 export const runtime = 'edge'
 
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
       if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
         // Fallback to OpenAI for chat JSON
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', temperature: 0.4, response_format: { type: 'json_object' },
+          model: DEFAULT_OPENAI_MINI_MODEL, temperature: 0.4, response_format: { type: 'json_object' },
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
       const msg = String(e?.message || '')
       // Fallback to OpenAI JSON
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini', temperature: 0.4, response_format: { type: 'json_object' },
+        model: DEFAULT_OPENAI_MINI_MODEL, temperature: 0.4, response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'system', content: `現在のトークン: ${JSON.stringify(current)}` },
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
     }
   } else {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: DEFAULT_OPENAI_MINI_MODEL,
       temperature: 0.4,
       response_format: { type: 'json_object' },
       messages: [

@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
+import { DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
+import { DEFAULT_OPENAI_MODEL } from '@/lib/openai'
 import { toast } from 'react-hot-toast'
 
 type Msg = { role: 'user' | 'assistant'; content: string }
@@ -76,11 +79,11 @@ export function DesignStudio({ initialTokens }: { initialTokens: DesignTokens })
       <div className="flex flex-col border rounded-lg overflow-hidden">
         <div className="p-3 border-b flex items-center gap-2">
           <Select value={provider} onValueChange={v => setProvider(v as any)}>
-            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="openai">OpenAI</SelectItem>
-              <SelectItem value="gemini">Gemini</SelectItem>
-              <SelectItem value="claude">Claude</SelectItem>
+              <SelectItem value="openai">{`OpenAI ${DEFAULT_OPENAI_MODEL}`}</SelectItem>
+              <SelectItem value="gemini">{`Gemini ${DEFAULT_GEMINI_MODEL}`}</SelectItem>
+              <SelectItem value="claude">{`Claude ${DEFAULT_CLAUDE_MODEL}`}</SelectItem>
             </SelectContent>
           </Select>
           

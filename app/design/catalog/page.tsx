@@ -8,6 +8,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'react-hot-toast'
 import { CatalogCodeDialog } from '@/components/catalog-code-dialog'
+import { DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
+import { DEFAULT_OPENAI_MODEL } from '@/lib/openai'
 import { Buttons } from './components/Buttons'
 import { Inputs } from './components/Inputs'
 import { Checks } from './components/Checks'
@@ -95,11 +98,11 @@ export default function CatalogPage() {
         <p className="text-sm text-muted-foreground">代表的なUIコンポーネントを一覧で確認し、メッセージから一括でスタイルを調整します（デザイントークン連動）。</p>
         <div className="flex flex-wrap gap-2 items-center">
           <Select value={provider} onValueChange={v => setProvider(v as Provider)}>
-            <SelectTrigger className="w-[140px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="openai">OpenAI</SelectItem>
-              <SelectItem value="gemini">Gemini</SelectItem>
-              <SelectItem value="claude">Claude</SelectItem>
+              <SelectItem value="openai">{`OpenAI ${DEFAULT_OPENAI_MODEL}`}</SelectItem>
+              <SelectItem value="gemini">{`Gemini ${DEFAULT_GEMINI_MODEL}`}</SelectItem>
+              <SelectItem value="claude">{`Claude ${DEFAULT_CLAUDE_MODEL}`}</SelectItem>
             </SelectContent>
           </Select>
           <Input className="w-[460px]" value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="例: iOS風で、やさしい色、角丸大きめ、コントラスト高め" />

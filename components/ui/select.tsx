@@ -13,7 +13,17 @@ const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
 
-const SelectValue = SelectPrimitive.Value
+const SelectValue = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Value>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Value
+    ref={ref}
+    className={cn('flex-1 min-w-0 truncate', className)}
+    {...props}
+  />
+))
+SelectValue.displayName = SelectPrimitive.Value.displayName
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
@@ -83,7 +93,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 whitespace-nowrap',
       className
     )}
     {...props}

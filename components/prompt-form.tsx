@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Textarea from 'react-textarea-autosize'
 import { UseChatHelpers } from 'ai/react'
+import { DEFAULT_OPENAI_MODEL } from '@/lib/openai'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -73,7 +74,7 @@ export function PromptForm({
           rows={1}
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Send your message to gpt-4o."
+          placeholder={`Send your message to ${DEFAULT_OPENAI_MODEL}.`}
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />

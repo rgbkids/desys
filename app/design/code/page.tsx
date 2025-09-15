@@ -11,6 +11,9 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
+import { DEFAULT_GEMINI_MODEL } from '@/lib/gemini'
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/anthropic'
+import { DEFAULT_OPENAI_MODEL } from '@/lib/openai'
 import { toast } from 'react-hot-toast'
 
 const DEFAULT_CODE = `'use client'
@@ -137,11 +140,11 @@ export default function CodeStudioPage() {
         <div className="md:col-span-1 space-y-2">
           <div className="flex items-center gap-2">
             <Select value={provider} onValueChange={v => setProvider(v as any)}>
-              <SelectTrigger className="w-[140px]"><SelectValue placeholder="Provider" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="gemini">Gemini</SelectItem>
-                <SelectItem value="claude">Claude</SelectItem>
+                <SelectItem value="openai">{`OpenAI ${DEFAULT_OPENAI_MODEL}`}</SelectItem>
+                <SelectItem value="gemini">{`Gemini ${DEFAULT_GEMINI_MODEL}`}</SelectItem>
+                <SelectItem value="claude">{`Claude ${DEFAULT_CLAUDE_MODEL}`}</SelectItem>
               </SelectContent>
             </Select>
           </div>

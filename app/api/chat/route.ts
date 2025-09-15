@@ -1,6 +1,7 @@
 import { kv } from '@vercel/kv'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
+import { DEFAULT_OPENAI_MODEL } from '@/lib/openai'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
   }
 
   const res = await openai.chat.completions.create({
-    model: 'gpt-4o',
+    model: DEFAULT_OPENAI_MODEL,
     messages,
     temperature: 0.7,
     stream: true
