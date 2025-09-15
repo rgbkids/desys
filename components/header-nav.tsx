@@ -13,7 +13,8 @@ export function HeaderNav() {
   const isCode = pathname.startsWith('/design/code')
   const isCatalog = pathname.startsWith('/design/catalog')
 
-  const variant = (active: boolean) => (active ? 'secondary' : 'outline') as const
+  type NavVariant = 'secondary' | 'outline'
+  const variant = (active: boolean): NavVariant => (active ? 'secondary' : 'outline')
 
   return (
     <>
@@ -24,4 +25,3 @@ export function HeaderNav() {
     </>
   )
 }
-

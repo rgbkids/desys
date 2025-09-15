@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as React from 'react'
 import { tokenKeys } from '@/lib/design-tokens'
 
@@ -13,17 +13,6 @@ export function CodeIframePreview({ code, height = 640 }: CodeIframePreviewProps
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const varsCss = useMemo(() => {
-    if (typeof window === 'undefined') return ''
-    const css: string[] = []
-    const cs = getComputedStyle(document.documentElement)
-    for (const k of tokenKeys) {
-      const v = cs.getPropertyValue(`--${k}`)
-      if (v) css.push(`--${k}: ${v.trim()};`)
-    }
-    return `:root{${css.join('')}}`
-  }, [code])
-
   useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe) return
@@ -31,6 +20,17 @@ export function CodeIframePreview({ code, height = 640 }: CodeIframePreviewProps
 
     const buildHtml = async () => {
       try {
+        // Build CSS variables from current document tokens
+        let varsCss = ''
+        if (typeof window !== 'undefined') {
+          const css: string[] = []
+          const cs = getComputedStyle(document.documentElement)
+          for (const k of tokenKeys) {
+            const v = cs.getPropertyValue(`--${k}`)
+            if (v) css.push(`--${k}: ${v.trim()};`)
+          }
+          varsCss = `:root{${css.join('')}}`
+        }
         const Babel = await import('@babel/standalone')
         const sanitized = (code || '').replace(/^import[^\n]*$/gm, '')
         const js = Babel.transform(sanitized, {
@@ -96,7 +96,7 @@ export function CodeIframePreview({ code, height = 640 }: CodeIframePreviewProps
     }
 
     buildHtml()
-  }, [code, varsCss])
+  }, [code])
 
   return (
     <div className="border rounded-lg overflow-hidden">
