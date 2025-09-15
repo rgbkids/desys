@@ -1,9 +1,9 @@
 "use client"
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { IconSpinner } from '@/components/ui/icons'
 
 export function HeaderNav() {
   const pathname = usePathname() || '/'
@@ -16,12 +16,35 @@ export function HeaderNav() {
   type NavVariant = 'secondary' | 'outline'
   const variant = (active: boolean): NavVariant => (active ? 'secondary' : 'outline')
 
+  function NavItem({ href, label, active }: { href: string; label: string; active: boolean }) {
+    const router = useRouter()
+    const [loading, setLoading] = useState(false)
+    useEffect(() => {
+      // reset loading when active state changes (route changed)
+      setLoading(false)
+    }, [active])
+    return (
+      <Button
+        variant={variant(active)}
+        disabled={loading}
+        onClick={() => {
+          if (loading || pathname === href) return
+          setLoading(true)
+          router.push(href)
+        }}
+      >
+        {loading ? <IconSpinner className="mr-2" /> : null}
+        {label}
+      </Button>
+    )
+  }
+
   return (
     <>
-      <Link href="/" className={cn(buttonVariants({ variant: variant(isHome) }))}>Home</Link>
-      <Link href="/design/code" className={cn(buttonVariants({ variant: variant(isCode) }))}>Code</Link>
-      <Link href="/design/catalog" className={cn(buttonVariants({ variant: variant(isCatalog) }))}>Catalog</Link>
-      <Link href="/design" className={cn(buttonVariants({ variant: variant(isDesign) }))}>Design</Link>
+      <NavItem href="/" label="Home" active={isHome} />
+      <NavItem href="/design/code" label="Code" active={isCode} />
+      <NavItem href="/design/catalog" label="Catalog" active={isCatalog} />
+      <NavItem href="/design" label="Design" active={isDesign} />
     </>
   )
 }

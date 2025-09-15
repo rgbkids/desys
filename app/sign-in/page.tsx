@@ -20,14 +20,14 @@ export default async function SignInPage() {
             </h1>
 
             <p className="text-slate-600 dark:text-slate-400 text-lg">
-              Your GPT4o-powered conversation companion
+              Your AI-powered design assistant
             </p>
           </div>
 
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-8">
             <div className="text-center mb-6">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Welcome back GPT-4o
+                Welcome Vibe Design System!
               </h2>
               <p className="text-slate-600 dark:text-slate-400">
                 Sign in to continue your conversations
