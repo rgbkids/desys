@@ -65,7 +65,7 @@ export function EmptyScreen({ setInput, append }: Pick<UseChatHelpers, 'setInput
                 const res = await fetch('/api/docs/usage')
                 const usage = res.ok ? await res.text() : ''
                 const prompt = usage
-                  ? `You are a helpful product guide. Refer to the following documentation to explain how to use this app. Keep it concise and actionable.\n\n--- USAGE.md ---\n${usage}\n\n---\nNow, explain in Japanese for this user.`
+                  ? `You are a helpful product guide. Refer to the following documentation to explain how to use this app. Keep it concise and actionable.\n\n--- usage.md ---\n${usage}\n\n---\nNow, explain in Japanese for this user.`
                   : 'このデザインシステムの使い方を教えてください。'
                 await append({ role: 'user', content: prompt })
               } catch {
