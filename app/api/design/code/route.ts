@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         const key = process.env.OPENAI_API_KEY
         if (!key) return NextResponse.json({ error: 'Gemini quota exceeded and OPENAI_API_KEY missing' }, { status: 429 })
         const res = await openai.chat.completions.create({
-          model: DEFAULT_OPENAI_MODEL, temperature: 0.4,
+          model: DEFAULT_OPENAI_MODEL,
           messages: [
             { role: 'system', content: SYSTEM },
             { role: 'system', content: `現在のトークン: ${JSON.stringify(tokens)}` },
@@ -97,13 +97,13 @@ export async function POST(req: NextRequest) {
         // Fallback to OpenAI
         const key = process.env.OPENAI_API_KEY
         if (!key) return NextResponse.json({ error: msg || 'Claude failed and OPENAI_API_KEY missing' }, { status: 500 })
-        const res = await openai.chat.completions.create({ model: DEFAULT_OPENAI_MODEL, temperature: 0.4, messages })
+        const res = await openai.chat.completions.create({ model: DEFAULT_OPENAI_MODEL, messages })
         code = res.choices[0]?.message?.content?.trim() || ''
       }
     } else {
       const key = process.env.OPENAI_API_KEY
       if (!key) return NextResponse.json({ error: 'Missing OPENAI_API_KEY' }, { status: 400 })
-      const res = await openai.chat.completions.create({ model: DEFAULT_OPENAI_MODEL, temperature: 0.4, messages })
+      const res = await openai.chat.completions.create({ model: DEFAULT_OPENAI_MODEL, messages })
       code = res.choices[0]?.message?.content?.trim() || ''
     }
   }
