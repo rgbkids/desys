@@ -1,3 +1,5 @@
+export const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash'
+
 export interface GeminiMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -21,8 +23,6 @@ function toGeminiContents(messages: GeminiMessage[]) {
   }
   return parts
 }
-
-export const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash'
 
 export async function geminiComplete(opts: {
   apiKey: string

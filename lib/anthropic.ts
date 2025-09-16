@@ -1,9 +1,9 @@
+export const DEFAULT_CLAUDE_MODEL = 'claude-3-5-sonnet-20241022'
+
 export interface AnthropicMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
 }
-
-export const DEFAULT_CLAUDE_MODEL = 'claude-3-5-sonnet-20241022'
 
 function toAnthropicPayload(messages: AnthropicMessage[]) {
   const systemParts: string[] = []
